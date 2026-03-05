@@ -174,15 +174,7 @@ In a full implementation, submissions would be stored in a secure database with 
                     [[title, city, theme, dimmed, reclaimed]],
                     columns=["title", "city", "theme", "dimmed", "reclaimed"]
                 )
-                # Append safely with proper quoting
-                new_entry.to_csv(
-                    DATA_FILE,
-                    mode="a",
-                    header=False,
-                    index=False,
-                    quoting=csv.QUOTE_ALL,
-                    line_terminator="\n"
-                )
+               new_entry.to_csv(DATA_FILE, mode="a", header=False, index=False, quoting=csv.QUOTE_ALL, lineterminator="\n")
                 st.success("Your story has been added to the archive.")
 
 # ===================================
@@ -203,4 +195,5 @@ how individuals have reclaimed their light, offering inspiration and insight int
 **Why It Matters:**  
 By giving space to these narratives, we turn isolation into visibility, making structural 
 challenges apparent and fostering collective empowerment.
+
 """)
