@@ -12,6 +12,31 @@ st.set_page_config(
 )
 
 # ---------------------------
+# Constants
+# ---------------------------
+DATA_FILE = os.path.join(os.getcwd(), "archive.csv")
+COLUMNS = ["title", "city", "theme", "dimmed", "reclaimed"]
+
+# ---------------------------
+# Ensure CSV Exists
+# ---------------------------
+if not os.path.exists(DATA_FILE):
+    pd.DataFrame(columns=COLUMNS).to_csv(
+        DATA_FILE, index=False, quoting=csv.QUOTE_ALL, line_terminator="\n"
+    )
+
+# ---------------------------
+# Safe CSV Read Function
+# ---------------------------
+def load_csv():
+    try:
+        return pd.read_csv(DATA_FILE, quoting=csv.QUOTE_ALL)
+    except (pd.errors.EmptyDataError, pd.errors.ParserError, FileNotFoundError):
+        return pd.DataFrame(columns=COLUMNS)
+
+df = load_csv()
+
+# ---------------------------
 # TITLE
 # ---------------------------
 st.markdown("""
@@ -53,24 +78,6 @@ div[role="tab"][aria-selected="true"] {
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# CSV File Setup
-# ---------------------------
-DATA_FILE = "archive.csv"
-COLUMNS = ["title", "city", "theme", "dimmed", "reclaimed"]
-
-# Ensure CSV exists
-if not os.path.exists(DATA_FILE):
-    pd.DataFrame(columns=COLUMNS).to_csv(
-        DATA_FILE, index=False, quoting=csv.QUOTE_ALL, line_terminator="\n"
-    )
-
-# Safe CSV read
-try:
-    df = pd.read_csv(DATA_FILE, quoting=csv.QUOTE_ALL)
-except (pd.errors.EmptyDataError, pd.errors.ParserError):
-    df = pd.DataFrame(columns=COLUMNS)
-
-# ---------------------------
 # Tabs
 # ---------------------------
 tab_home, tab_explore, tab_submit, tab_about = st.tabs([
@@ -102,6 +109,7 @@ with tab_home:
 # ---------------------------
 with tab_explore:
     st.header("Explore Stories")
+    df = load_csv()
     if df.empty:
         st.info("No stories have been submitted yet.")
     else:
@@ -147,24 +155,17 @@ with tab_submit:
             if dimmed.strip() == "" or reclaimed.strip() == "":
                 st.error("Please complete both story sections before submitting.")
             else:
-                new_entry = pd.DataFrame(
-                    [[title, city, theme, dimmed, reclaimed]],
-                    columns=["title", "city", "theme", "dimmed", "reclaimed"]
-                )
-                # Append safely
+                new_entry = pd.DataFrame([[title, city, theme, dimmed, reclaimed]], columns=COLUMNS)
                 new_entry.to_csv(
                     DATA_FILE,
                     mode="a",
                     header=False,
                     index=False,
                     quoting=csv.QUOTE_ALL,
-                    lineterminator="\n"
+                    line_terminator="\n"
                 )
+                st.success("Your story has been added to the archive.")
 
-        # Reload the CSV so Explore sees the latest entries
-        df = pd.read_csv(DATA_FILE, quoting=csv.QUOTE_ALL)
-
-        st.success("Your story has been added to the archive.")
 # ---------------------------
 # ABOUT TAB
 # ---------------------------
@@ -181,5 +182,6 @@ The Light Archive collects and showcases stories of Black youth whose potential 
 **Why It Matters:**  
 By sharing these narratives, isolation becomes visibility, and collective understanding grows.
 """)
+
 
 
