@@ -157,7 +157,7 @@ with tab_submit:
                     header=False,
                     index=False,
                     quoting=csv.QUOTE_ALL,
-                    line_terminator="\n"
+                    lineterminator="\n"
                 )
                 st.success("Your story has been added to the archive.")
 
@@ -177,3 +177,4 @@ The Light Archive collects and showcases stories of Black youth whose potential 
 **Why It Matters:**  
 By sharing these narratives, isolation becomes visibility, and collective understanding grows.
 """)
+
