@@ -14,16 +14,15 @@ st.set_page_config(
 #---------------------------
 # ADD TITLE
 #---------------------------
-
 st.markdown("""
-    <div style='text-align: center; padding: 1rem 1rem;'>
-        <h1 style='font-size: 2.8rem;'>💡 The Light Archive</h1>
-        <p style='font-size: 1.3rem; max-width: 700px; margin: auto; line-height: 1.6;'>
-            A digital storytelling platform transforming racialized isolation 
-            into collective visibility.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+<div style='text-align: center; padding: 1rem 1rem;'>
+    <h1 style='font-size: 2.8rem;'>💡 The Light Archive</h1>
+    <p style='font-size: 1.3rem; max-width: 700px; margin: auto; line-height: 1.6;'>
+        A digital storytelling platform transforming racialized isolation 
+        into collective visibility.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # ---------------------------
 # CSS for Colors & Tabs
@@ -88,31 +87,20 @@ tab_home, tab_explore, tab_submit, tab_about = st.tabs([
 # HOME TAB
 # ===================================
 with tab_home:
-
     st.markdown("---")
-
-    # ====== Landing Section ======
-    st.write("")  # Top padding
     st.write("")
-    # Subtitle / tagline
+    st.write("")
     st.markdown("<h3 style='text-align: center; color: #ffffff;'>A space where Black youth stories are seen, shared, and celebrated</h3>", unsafe_allow_html=True)
     st.write("")
     st.write("")
-
-    # Main paragraph - centered using markdown trick
-    st.markdown(
-        """
+    st.markdown("""
     <p style='text-align: center; font-size: 1.2rem; line-height: 1.8; max-width: 800px; margin: auto;'>
-    💡The Light Archive is a space where the experiences of Black youth are seen, shared, and celebrated. Here, stories of moments when one’s potential was overlooked, underestimated, or challenged are collected. By shining a light on these experiences, we turn isolation into visibility, personal struggles into shared understanding, and private victories into collective inspiration. Every story submitted helps reveal patterns, builds community awareness, and reminds everyone that even when light is dimmed, it can always be reclaimed.
+    💡The Light Archive is a space where the experiences of Black youth are seen, shared, and celebrated. Stories of moments when potential was overlooked or challenged are collected here. By shining a light on these experiences, isolation becomes visibility, personal struggles become shared understanding, and private victories become collective inspiration. Every story helps reveal patterns, build community awareness, and remind everyone that even when light is dimmed, it can always be reclaimed.
     </p>
-    """,
-        unsafe_allow_html=True
-    )
-
-    st.write("")  # bottom padding
+    """, unsafe_allow_html=True)
     st.write("")
-    st.write("---")  # horizontal line to separate from next section
     st.write("")
+    st.markdown("---")
     st.write("Explore the archive or contribute your story using the tabs above!")
 
 # ===================================
@@ -125,7 +113,6 @@ with tab_explore:
     else:
         theme_options = ["All"] + sorted(df["theme"].dropna().unique())
         theme_filter = st.selectbox("Filter by Theme", theme_options)
-
         filtered_df = df if theme_filter == "All" else df[df["theme"] == theme_filter]
 
         for _, row in filtered_df.iterrows():
@@ -174,7 +161,15 @@ In a full implementation, submissions would be stored in a secure database with 
                     [[title, city, theme, dimmed, reclaimed]],
                     columns=["title", "city", "theme", "dimmed", "reclaimed"]
                 )
-               new_entry.to_csv(DATA_FILE, mode="a", header=False, index=False, quoting=csv.QUOTE_ALL, lineterminator="\n")
+                # Append safely with proper quoting and correct line terminator
+                new_entry.to_csv(
+                    DATA_FILE,
+                    mode="a",
+                    header=False,
+                    index=False,
+                    quoting=csv.QUOTE_ALL,
+                    lineterminator="\n"
+                )
                 st.success("Your story has been added to the archive.")
 
 # ===================================
@@ -184,16 +179,12 @@ with tab_about:
     st.header("About The Light Archive 💡")
     st.markdown("""
 **Purpose:**  
-The Light Archive is a platform designed to collect and showcase stories of Black youth 
-whose potential has been questioned, overlooked, or misunderstood. Each story highlights 
-how individuals have reclaimed their light, offering inspiration and insight into shared experiences.
+The Light Archive collects and showcases stories of Black youth whose potential has been questioned, overlooked, or misunderstood. Each story highlights how individuals have reclaimed their light, offering inspiration and insight into shared experiences.
 
 **How It Works:**  
 - Explore stories across different themes of systemic barriers and personal triumphs.  
 - Submit your own experiences to help others see patterns, resilience, and community solutions.  
 
 **Why It Matters:**  
-By giving space to these narratives, we turn isolation into visibility, making structural 
-challenges apparent and fostering collective empowerment.
-
+By giving space to these narratives, isolation turns into visibility, making structural challenges apparent and fostering collective empowerment.
 """)
