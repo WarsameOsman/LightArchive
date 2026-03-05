@@ -149,8 +149,9 @@ with tab_submit:
             else:
                 new_entry = pd.DataFrame(
                     [[title, city, theme, dimmed, reclaimed]],
-                    columns=COLUMNS
+                    columns=["title", "city", "theme", "dimmed", "reclaimed"]
                 )
+                # Append safely
                 new_entry.to_csv(
                     DATA_FILE,
                     mode="a",
@@ -159,8 +160,11 @@ with tab_submit:
                     quoting=csv.QUOTE_ALL,
                     lineterminator="\n"
                 )
-                st.success("Your story has been added to the archive.")
 
+        # Reload the CSV so Explore sees the latest entries
+        df = pd.read_csv(DATA_FILE, quoting=csv.QUOTE_ALL)
+
+        st.success("Your story has been added to the archive.")
 # ---------------------------
 # ABOUT TAB
 # ---------------------------
@@ -177,4 +181,5 @@ The Light Archive collects and showcases stories of Black youth whose potential 
 **Why It Matters:**  
 By sharing these narratives, isolation becomes visibility, and collective understanding grows.
 """)
+
 
