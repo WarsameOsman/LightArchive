@@ -11,9 +11,9 @@ st.set_page_config(
     layout="wide"
 )
 
-#---------------------------
-# ADD TITLE
-#---------------------------
+# ---------------------------
+# TITLE
+# ---------------------------
 st.markdown("""
 <div style='text-align: center; padding: 1rem 1rem;'>
     <h1 style='font-size: 2.8rem;'>💡 The Light Archive</h1>
@@ -29,31 +29,24 @@ st.markdown("""
 # ---------------------------
 st.markdown("""
 <style>
-/* App background */
 body, .stApp {
     background-color: #000000;
     color: white;
 }
-
-/* Streamlit tabs styling */
 div[role="tab"] {
-    background-color: #007A33;  /* Green tabs */
+    background-color: #007A33;
     color: white;
     font-weight: bold;
     border-radius: 5px 5px 0 0;
     padding: 10px 15px;
     margin-right: 2px;
 }
-
-/* Hover effect for tabs */
 div[role="tab"]:hover {
-    background-color: #E10600;  /* Red hover */
+    background-color: #E10600;
     color: white;
 }
-
-/* Selected tab */
 div[role="tab"][aria-selected="true"] {
-    background-color: #007A33;  /* Green selected */
+    background-color: #007A33;
     color: white;
 }
 </style>
@@ -63,49 +56,50 @@ div[role="tab"][aria-selected="true"] {
 # CSV File Setup
 # ---------------------------
 DATA_FILE = "archive.csv"
+COLUMNS = ["title", "city", "theme", "dimmed", "reclaimed"]
 
 # Ensure CSV exists
 if not os.path.exists(DATA_FILE):
-    pd.DataFrame(
-        columns=["title", "city", "theme", "dimmed", "reclaimed"]
-    ).to_csv(DATA_FILE, index=False, quoting=csv.QUOTE_ALL)
+    pd.DataFrame(columns=COLUMNS).to_csv(
+        DATA_FILE, index=False, quoting=csv.QUOTE_ALL, line_terminator="\n"
+    )
 
-# Read CSV safely
+# Safe CSV read
 try:
     df = pd.read_csv(DATA_FILE, quoting=csv.QUOTE_ALL)
-except pd.errors.EmptyDataError:
-    df = pd.DataFrame(columns=["title", "city", "theme", "dimmed", "reclaimed"])
+except (pd.errors.EmptyDataError, pd.errors.ParserError):
+    df = pd.DataFrame(columns=COLUMNS)
 
 # ---------------------------
-# Tabs Navigation
+# Tabs
 # ---------------------------
 tab_home, tab_explore, tab_submit, tab_about = st.tabs([
     "Home", "Explore the Archive", "Submit Your Story", "About"
 ])
 
-# ===================================
+# ---------------------------
 # HOME TAB
-# ===================================
+# ---------------------------
 with tab_home:
     st.markdown("---")
-    st.write("")
-    st.write("")
-    st.markdown("<h3 style='text-align: center; color: #ffffff;'>A space where Black youth stories are seen, shared, and celebrated</h3>", unsafe_allow_html=True)
-    st.write("")
-    st.write("")
-    st.markdown("""
-    <p style='text-align: center; font-size: 1.2rem; line-height: 1.8; max-width: 800px; margin: auto;'>
-    💡The Light Archive is a space where the experiences of Black youth are seen, shared, and celebrated. Stories of moments when potential was overlooked or challenged are collected here. By shining a light on these experiences, isolation becomes visibility, personal struggles become shared understanding, and private victories become collective inspiration. Every story helps reveal patterns, build community awareness, and remind everyone that even when light is dimmed, it can always be reclaimed.
-    </p>
-    """, unsafe_allow_html=True)
-    st.write("")
-    st.write("")
+    st.markdown(
+        "<h3 style='text-align: center; color: #ffffff;'>A space where Black youth stories are seen, shared, and celebrated</h3>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        """
+<p style='text-align: center; font-size: 1.2rem; line-height: 1.8; max-width: 800px; margin: auto;'>
+💡The Light Archive collects the stories of Black youth whose potential was questioned, underestimated, or challenged. By sharing these experiences, isolation becomes visibility and personal triumphs become collective inspiration. Every story helps reveal patterns, build awareness, and remind everyone that even when light is dimmed, it can be reclaimed.
+</p>
+""",
+        unsafe_allow_html=True
+    )
     st.markdown("---")
     st.write("Explore the archive or contribute your story using the tabs above!")
 
-# ===================================
+# ---------------------------
 # EXPLORE TAB
-# ===================================
+# ---------------------------
 with tab_explore:
     st.header("Explore Stories")
     if df.empty:
@@ -118,22 +112,18 @@ with tab_explore:
         for _, row in filtered_df.iterrows():
             title_display = row["title"] if pd.notna(row["title"]) and row["title"] != "" else "Untitled Story"
             city_display = f" ({row['city']})" if pd.notna(row["city"]) and row["city"] != "" else ""
-
             with st.expander(f"{title_display}{city_display}"):
                 st.subheader("When My Light Felt Dimmed")
                 st.write(row["dimmed"])
                 st.subheader("How I Reclaimed or Am Rebuilding It")
                 st.write(row["reclaimed"])
 
-# ===================================
+# ---------------------------
 # SUBMIT TAB
-# ===================================
+# ---------------------------
 with tab_submit:
     st.header("Submit Your Story")
-    st.markdown("""
-This prototype demonstrates submission functionality.  
-In a full implementation, submissions would be stored in a secure database with moderation safeguards.
-""")
+    st.markdown("This is a prototype. Submissions are appended safely to the CSV.")
 
     with st.form("submission_form", clear_on_submit=True):
         title = st.text_input("Story Title (Optional)")
@@ -159,32 +149,31 @@ In a full implementation, submissions would be stored in a secure database with 
             else:
                 new_entry = pd.DataFrame(
                     [[title, city, theme, dimmed, reclaimed]],
-                    columns=["title", "city", "theme", "dimmed", "reclaimed"]
+                    columns=COLUMNS
                 )
-                # Append safely with proper quoting and correct line terminator
                 new_entry.to_csv(
                     DATA_FILE,
                     mode="a",
                     header=False,
                     index=False,
                     quoting=csv.QUOTE_ALL,
-                    lineterminator="\n"
+                    line_terminator="\n"
                 )
                 st.success("Your story has been added to the archive.")
 
-# ===================================
+# ---------------------------
 # ABOUT TAB
-# ===================================
+# ---------------------------
 with tab_about:
     st.header("About The Light Archive 💡")
     st.markdown("""
 **Purpose:**  
-The Light Archive collects and showcases stories of Black youth whose potential has been questioned, overlooked, or misunderstood. Each story highlights how individuals have reclaimed their light, offering inspiration and insight into shared experiences.
+The Light Archive collects and showcases stories of Black youth whose potential has been questioned or underestimated.
 
 **How It Works:**  
-- Explore stories across different themes of systemic barriers and personal triumphs.  
-- Submit your own experiences to help others see patterns, resilience, and community solutions.  
+- Explore stories across different themes.  
+- Submit your own experiences safely.  
 
 **Why It Matters:**  
-By giving space to these narratives, isolation turns into visibility, making structural challenges apparent and fostering collective empowerment.
+By sharing these narratives, isolation becomes visibility, and collective understanding grows.
 """)
